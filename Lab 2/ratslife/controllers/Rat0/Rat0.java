@@ -92,6 +92,7 @@ public class Rat0 extends Robot {
         rightSpeed -= (slowMotionWeights[i]-collisionAvoidanceWeights[i])*distance[i];
       }
       // return either to left or to right when there is an obstacle
+       // Swapped sensors in order to work backwards. 
       if (distance[2]+distance[3] > 1800 || distance[4]+distance[5] > 1800) {
         if (!turn) {
           turn = true;
@@ -99,9 +100,11 @@ public class Rat0 extends Robot {
         }
         if (right) {
           ledValue[2] = 1;
+          // Swapped +,- to work backwards. 
           leftSpeed  =  -maxSpeed;
           rightSpeed = maxSpeed;
         } else {
+           // Swapped +,- to work backwards. 
           ledValue[6] = 1;
           leftSpeed  = maxSpeed;
           rightSpeed =  -maxSpeed;
