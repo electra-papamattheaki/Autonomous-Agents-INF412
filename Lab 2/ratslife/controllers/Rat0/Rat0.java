@@ -92,19 +92,19 @@ public class Rat0 extends Robot {
         rightSpeed -= (slowMotionWeights[i]-collisionAvoidanceWeights[i])*distance[i];
       }
       // return either to left or to right when there is an obstacle
-      if (distance[6]+distance[7] > 1800 || distance[0]+distance[1] > 1800) {
+      if (distance[2]+distance[3] > 1800 || distance[4]+distance[5] > 1800) {
         if (!turn) {
           turn = true;
           right = r.nextBoolean();
         }
         if (right) {
           ledValue[2] = 1;
-          leftSpeed  =  maxSpeed;
-          rightSpeed = -maxSpeed;
+          leftSpeed  =  -maxSpeed;
+          rightSpeed = maxSpeed;
         } else {
           ledValue[6] = 1;
-          leftSpeed  = -maxSpeed;
-          rightSpeed =  maxSpeed;
+          leftSpeed  = maxSpeed;
+          rightSpeed =  -maxSpeed;
         }
       } else {
         turn=false;
@@ -153,8 +153,9 @@ public class Rat0 extends Robot {
       for(int i=0; i<10; i++) {
         leds[i].set(ledValue[i]);
       }
-      leftMotor.setVelocity(0.00628 * leftSpeed);
-      rightMotor.setVelocity(0.00628 * rightSpeed);
+      // Added negative(-) to make the robot work backwards.
+      leftMotor.setVelocity(-0.00628 * leftSpeed);
+      rightMotor.setVelocity(-0.00628 * rightSpeed);
     }
     // Enter here exit cleanup code
   }
