@@ -13,9 +13,7 @@
 // limitations under the License.
 
 import com.cyberbotics.webots.controller.Accelerometer;
-import com.cyberbotics.webots.controller.Camera;
 import com.cyberbotics.webots.controller.DistanceSensor;
-import com.cyberbotics.webots.controller.LED;
 import com.cyberbotics.webots.controller.LightSensor;
 import com.cyberbotics.webots.controller.Motor;
 import com.cyberbotics.webots.controller.Robot;
@@ -30,28 +28,22 @@ public class Rat0 extends Robot {
   protected final double[] slowMotionWeights = {0.0125,0.00625,0.0,0.0,0.0,0.0,0.00625,0.0125};
 
   protected Accelerometer accelerometer;
-  protected Camera camera;
-  protected int cameraWidth, cameraHeight;
+  //protected Camera camera;
+  //protected int cameraWidth, cameraHeight;
   protected Motor leftMotor, rightMotor;
   protected DistanceSensor[] distanceSensors = new DistanceSensor[8];
   protected LightSensor[] lightSensors = new LightSensor[8];
-  protected LED[] leds = new LED[10];
+  //protected LED[] leds = new LED[10];
 
   public Rat0() {
     accelerometer = getAccelerometer("accelerometer");
-    camera = getCamera("camera");
-    camera.enable(8*timeStep);
-    cameraWidth=camera.getWidth();
-    cameraHeight=camera.getHeight();
     leftMotor = getMotor("left wheel motor");
     rightMotor = getMotor("right wheel motor");
     leftMotor.setPosition(Double.POSITIVE_INFINITY);
     rightMotor.setPosition(Double.POSITIVE_INFINITY);
     leftMotor.setVelocity(0.0);
     rightMotor.setVelocity(0.0);
-    for (int i=0;i<10;i++) {
-      leds[i]=getLED("led"+i);
-    };
+    
     for (int i=0;i<8;i++) {
       distanceSensors[i] = getDistanceSensor("ps"+i);
       distanceSensors[i].enable(timeStep);
@@ -73,16 +65,13 @@ public class Rat0 extends Robot {
     double oldBattery = -1.0;
     int image[];
     double distance[] = new double[8];
-    int ledValue[] = new int[10];
+    //int ledValue[] = new int[10];
     double leftSpeed, rightSpeed;
 
     while (step(timeStep) != -1) {
 
-      // read sensor information
-      image = camera.getImage();
       for(int i=0;i<8;i++) distance[i] = distanceSensors[i].getValue();
       battery = batterySensorGetValue();
-      for(int i=0;i<10;i++) ledValue[i] = 0;
 
       // obstacle avoidance behavior
       leftSpeed  = maxSpeed;
@@ -92,20 +81,18 @@ public class Rat0 extends Robot {
         rightSpeed -= (slowMotionWeights[i]-collisionAvoidanceWeights[i])*distance[i];
       }
       // return either to left or to right when there is an obstacle
-       // Swapped sensors in order to work backwards. 
+      // Swapped sensors in order to work backwards. 
       if (distance[2]+distance[3] > 1800 || distance[4]+distance[5] > 1800) {
         if (!turn) {
           turn = true;
           right = r.nextBoolean();
         }
         if (right) {
-          ledValue[2] = 1;
           // Swapped +,- to work backwards. 
           leftSpeed  =  -maxSpeed;
           rightSpeed = maxSpeed;
         } else {
            // Swapped +,- to work backwards. 
-          ledValue[6] = 1;
           leftSpeed  = maxSpeed;
           rightSpeed =  -maxSpeed;
         }
@@ -115,7 +102,7 @@ public class Rat0 extends Robot {
       // vision
       int blobX=0,blobY=0,blobCounter=0;
       // looking for an alight feeder
-      for(int x=0; x<cameraWidth; x++) for(int y=cameraWidth/3; y<2*cameraWidth/3; y++) {
+      /*for(int x=0; x<cameraWidth; x++) for(int y=cameraWidth/3; y<2*cameraWidth/3; y++) {
         int pixel = image[y * cameraWidth + x];
         if (Camera.pixelGetGreen(pixel) >= 248 &&
             Camera.pixelGetBlue(pixel) >= 248) {
@@ -124,6 +111,9 @@ public class Rat0 extends Robot {
           blobCounter++;
         }
       }
+      */
+
+      /* Comment the part about the Camera. 
       if (blobCounter > 2) { // significant enough
         seeFeeder = true;
         blobX /= blobCounter;
@@ -139,23 +129,17 @@ public class Rat0 extends Robot {
           leftSpeed  = maxSpeed/3;
           rightSpeed = maxSpeed/3;
         }
-      }
+      } 
+      */ 
+
+
       //recharging behavior
       if (battery > oldBattery) {
         leftSpeed  = 0.0;
         rightSpeed = 0.0;
-        ledValue[8] = 1; // turn on the body led
       }
       oldBattery = battery;
-      if (blink++ >= 20) { // blink the back LEDs
-        ledValue[4] = 1;
-        if (blink == 40) blink = 0;
-      }
-
-      //set actuators
-      for(int i=0; i<10; i++) {
-        leds[i].set(ledValue[i]);
-      }
+      
       // Added negative(-) to make the robot work backwards.
       leftMotor.setVelocity(-0.00628 * leftSpeed);
       rightMotor.setVelocity(-0.00628 * rightSpeed);
