@@ -28,12 +28,9 @@ public class Rat0 extends Robot {
   protected final double[] slowMotionWeights = {0.0125,0.00625,0.0,0.0,0.0,0.0,0.00625,0.0125};
 
   protected Accelerometer accelerometer;
-  //protected Camera camera;
-  //protected int cameraWidth, cameraHeight;
   protected Motor leftMotor, rightMotor;
   protected DistanceSensor[] distanceSensors = new DistanceSensor[8];
   protected LightSensor[] lightSensors = new LightSensor[8];
-  //protected LED[] leds = new LED[10];
 
   public Rat0() {
     accelerometer = getAccelerometer("accelerometer");
@@ -65,7 +62,6 @@ public class Rat0 extends Robot {
     double oldBattery = -1.0;
     int image[];
     double distance[] = new double[8];
-    //int ledValue[] = new int[10];
     double leftSpeed, rightSpeed;
 
     while (step(timeStep) != -1) {
@@ -88,7 +84,7 @@ public class Rat0 extends Robot {
           right = r.nextBoolean();
         }
         if (right) {
-          // Swapped +,- to work backwards. 
+          //Swapped +,- to work backwards. 
           leftSpeed  =  -maxSpeed;
           rightSpeed = maxSpeed;
         } else {
@@ -99,40 +95,7 @@ public class Rat0 extends Robot {
       } else {
         turn=false;
       }
-      // vision
-      int blobX=0,blobY=0,blobCounter=0;
-      // looking for an alight feeder
-      /*for(int x=0; x<cameraWidth; x++) for(int y=cameraWidth/3; y<2*cameraWidth/3; y++) {
-        int pixel = image[y * cameraWidth + x];
-        if (Camera.pixelGetGreen(pixel) >= 248 &&
-            Camera.pixelGetBlue(pixel) >= 248) {
-          blobX += x;
-          blobY += y;
-          blobCounter++;
-        }
-      }
-      */
-
-      /* Comment the part about the Camera. 
-      if (blobCounter > 2) { // significant enough
-        seeFeeder = true;
-        blobX /= blobCounter;
-        blobY /= blobCounter;
-        int dx = (blobX-cameraWidth/2)*10;
-        if (dx > 0) ledValue[1] = 1;
-        else ledValue[7] = 1;
-        if (oldDx != dx){
-          leftSpeed  =  2*dx;
-          rightSpeed = -2*dx;
-          oldDx = dx;
-        } else {
-          leftSpeed  = maxSpeed/3;
-          rightSpeed = maxSpeed/3;
-        }
-      } 
-      */ 
-
-
+     
       //recharging behavior
       if (battery > oldBattery) {
         leftSpeed  = 0.0;
