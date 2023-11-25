@@ -66,7 +66,10 @@ public class Rat0 extends Robot {
 
     while (step(timeStep) != -1) {
 
-      for(int i=0;i<8;i++) distance[i] = distanceSensors[i].getValue();
+      for(int i=0;i<8;i++){ 
+        distance[i] = distanceSensors[i].getValue();
+        System.out.println("Distance sensor " + i + ": " + distance[i]);
+      } 
       battery = batterySensorGetValue();
 
       // obstacle avoidance behavior
@@ -76,24 +79,30 @@ public class Rat0 extends Robot {
         leftSpeed  -= (slowMotionWeights[i]+collisionAvoidanceWeights[i])*distance[i];
         rightSpeed -= (slowMotionWeights[i]-collisionAvoidanceWeights[i])*distance[i];
       }
+
+      // Used if it's stuck in the wall to turn. 
+      if (distance[3] > 1500 || distance[4] > 1500) {
+        leftSpeed  = maxSpeed;
+        rightSpeed =  -maxSpeed;
+      }
       // return either to left or to right when there is an obstacle
       // Swapped sensors in order to work backwards. 
-      if (distance[2]+distance[3] > 1800 || distance[4]+distance[5] > 1800) {
-        if (!turn) {
+      if (distance[2]<300 || distance[3] < 1800) {
+        if (turn) {
           turn = true;
-          right = r.nextBoolean();
-        }
-        if (right) {
+          right = false;
+        //}
+       // if (right) {
           //Swapped +,- to work backwards. 
-          leftSpeed  =  -maxSpeed;
-          rightSpeed = maxSpeed;
-        } else {
+         // leftSpeed  =  -maxSpeed;
+         // rightSpeed = maxSpeed;
+        //} else {
            // Swapped +,- to work backwards. 
           leftSpeed  = maxSpeed;
           rightSpeed =  -maxSpeed;
-        }
-      } else {
-        turn=false;
+        //}
+      //} else {
+        turn=false;}
       }
      
       //recharging behavior
