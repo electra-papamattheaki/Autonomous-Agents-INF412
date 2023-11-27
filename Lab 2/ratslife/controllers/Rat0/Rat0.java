@@ -81,7 +81,7 @@ public class Rat0 extends Robot {
       }
 
       // Used if it's stuck in the wall to turn. 
-      if (distance[3] > 1500 || distance[4] > 1500) {
+      if (distance[3] + distance[4] > 800) {
         leftSpeed  = maxSpeed;
         rightSpeed =  -maxSpeed;
       }
