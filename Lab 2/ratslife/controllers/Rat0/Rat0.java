@@ -24,8 +24,8 @@ public class Rat0 extends Robot {
 
   protected final int timeStep = 32;
   protected final double maxSpeed = 300;
-  protected final double[] collisionAvoidanceWeights = {0.06,0.03,0.015,0.0,0.0,-0.015,-0.03,-0.06};
-  protected final double[] slowMotionWeights = {0.0125,0.00625,0.0,0.0,0.0,0.0,0.00625,0.0125};
+  protected final double[] collisionAvoidanceWeights = {0.06,0.03,0.05,0.02,-0.005,-0.005,-0.03,-0.06};
+  protected final double[] slowMotionWeights = {0.0125,0.00625,0.0,0.0,0.02,0.0015,0.00625,0.0125};
 
   protected Accelerometer accelerometer;
   protected Motor leftMotor, rightMotor;
@@ -52,15 +52,8 @@ public class Rat0 extends Robot {
 
   public void run() {
 
-    int blink = 0;
-    int oldDx = 0;
-    Random r = new Random();
-    boolean turn = false;
-    boolean right = false;
-    boolean seeFeeder = false;
     double battery;
     double oldBattery = -1.0;
-    int image[];
     double distance[] = new double[8];
     double leftSpeed, rightSpeed;
 
@@ -75,35 +68,32 @@ public class Rat0 extends Robot {
       // obstacle avoidance behavior
       leftSpeed  = maxSpeed;
       rightSpeed = maxSpeed;
-      for (int i=0;i<8;i++) {
-        leftSpeed  -= (slowMotionWeights[i]+collisionAvoidanceWeights[i])*distance[i];
-        rightSpeed -= (slowMotionWeights[i]-collisionAvoidanceWeights[i])*distance[i];
-      }
 
-      // Used if it's stuck in the wall to turn. 
-      if (distance[3] + distance[4] > 800) {
-        leftSpeed  = maxSpeed;
-        rightSpeed =  -maxSpeed;
+      // To detect an obstacle use sensors 3,4
+      if(distance[3] > 500 || distance[4] > 500) {
+        leftSpeed = -maxSpeed;  // Turn Left.
+        rightSpeed = maxSpeed;
       }
-      // return either to left or to right when there is an obstacle
-      // Swapped sensors in order to work backwards. 
-      if (distance[2]<300 || distance[3] < 1800) {
-        if (turn) {
-          turn = true;
-          right = false;
-        //}
-       // if (right) {
-          //Swapped +,- to work backwards. 
-         // leftSpeed  =  -maxSpeed;
-         // rightSpeed = maxSpeed;
-        //} else {
-           // Swapped +,- to work backwards. 
-          leftSpeed  = maxSpeed;
-          rightSpeed =  -maxSpeed;
-        //}
-      //} else {
-        turn=false;}
+      else { 
+        //The distance from the left hand side wall is okay, i obey to the LWF rule continue straight
+        if(distance[2] > 300) {
+          leftSpeed = maxSpeed;
+          rightSpeed = maxSpeed;
+        }
+        else {
+          leftSpeed = maxSpeed;
+          rightSpeed = maxSpeed/8;
+        }
+        
+        //I had an 180 left turn, let me fix my position parallel to the wall to avoid crashing to it
+        if(distance[2] > 300){
+          //System.out.println("Oh I came too close");
+          leftSpeed = maxSpeed/2.5;
+          rightSpeed = maxSpeed;
+        }
       }
+      
+      
      
       //recharging behavior
       if (battery > oldBattery) {
