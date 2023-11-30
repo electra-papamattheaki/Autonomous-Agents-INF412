@@ -61,7 +61,7 @@ public class Rat1 extends Robot {
     while (step(timeStep) != -1) {
 
       // read sensor information
-      for(int i=0;i<8;i++) {
+      for(int i=0;i<8;i++) //{
       distance[i] = distanceSensors[i].getValue();
       //System.out.println("Distance sensor " + i + ": " + distance[i]);}
       battery = batterySensorGetValue();
@@ -69,6 +69,7 @@ public class Rat1 extends Robot {
       // obstacle avoidance behavior
       leftSpeed  = maxSpeed;
       rightSpeed = maxSpeed;
+
       for (int i=0;i<8;i++) {
         leftSpeed  -= (slowMotionWeights[i]+collisionAvoidanceWeights[i])*distance[i];
         rightSpeed -= (slowMotionWeights[i]-collisionAvoidanceWeights[i])*distance[i];
