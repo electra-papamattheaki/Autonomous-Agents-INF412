@@ -24,7 +24,7 @@ public class Rat1 extends Robot {
 
   protected final int timeStep = 32;
   protected final double maxSpeed = 300;
-  protected final double[] collisionAvoidanceWeights = {-0.06,-0.03,-0.05,0.02,0.005,0.005,0.03,0.06};
+  protected final double[] collisionAvoidanceWeights = {0.0,0.0,0.0,0.03,0.06,-0.015,-0.003,-0.06};
   protected final double[] slowMotionWeights = {0.0125,0.00625,0.0,0.0,0.0,0.0,0.00625,0.0125};
 
   protected Accelerometer accelerometer;
@@ -61,24 +61,26 @@ public class Rat1 extends Robot {
     while (step(timeStep) != -1) {
 
       // read sensor information
-      for(int i=0;i<8;i++) distance[i] = distanceSensors[i].getValue();
+      for(int i=0;i<8;i++) {
+      distance[i] = distanceSensors[i].getValue();
+      System.out.println("Distance sensor " + i + ": " + distance[i]);}
       battery = batterySensorGetValue();
 
       // obstacle avoidance behavior
       leftSpeed  = maxSpeed;
       rightSpeed = maxSpeed;
-      //for (int i=0;i<8;i++) {
-        //leftSpeed  -= (slowMotionWeights[i]+collisionAvoidanceWeights[i])*distance[i];
-        //rightSpeed -= (slowMotionWeights[i]-collisionAvoidanceWeights[i])*distance[i];
-      //}
-      /// To detect an obstacle use sensors 3,4
-      if(distance[3] > 500 || distance[4] > 500) {
+      for (int i=0;i<8;i++) {
+        leftSpeed  -= (slowMotionWeights[i]+collisionAvoidanceWeights[i])*distance[i];
+        rightSpeed -= (slowMotionWeights[i]-collisionAvoidanceWeights[i])*distance[i];
+      }
+      // To detect an obstacle use sensors 3,4
+      if(distance[3] > 400 || distance[4] > 400) {
         leftSpeed = maxSpeed;  
         rightSpeed = -maxSpeed; // Turn Right.
       }
       else { 
-        //The distance from the left hand side wall is okay, i obey to the LWF rule continue straight
-        if(distance[5] > 300) {
+        // Rat1 is close to the right wall!
+        if(distance[5] > 200) {
           leftSpeed = maxSpeed;
           rightSpeed = maxSpeed;
         }
@@ -87,9 +89,9 @@ public class Rat1 extends Robot {
           rightSpeed = maxSpeed/8;
         }
         
-        //I had an 180 left turn, let me fix my position parallel to the wall to avoid crashing to it
+        // When I am stuck in the corner..
         if(distance[4] > 200){
-          leftSpeed = maxSpeed/2.5;
+          leftSpeed = maxSpeed/3;
           rightSpeed = maxSpeed;
         }
       }
@@ -102,7 +104,7 @@ public class Rat1 extends Robot {
       oldBattery = battery;
       
       // Added negative(-) to make the robot work backwards.
-      System.out.println("I'M GOING BACKWARDS!!");
+      //System.out.println("I'M GOING BACKWARDS!!");
       leftMotor.setVelocity(-0.00628 * leftSpeed);
       rightMotor.setVelocity(-0.00628 * rightSpeed);
     }
