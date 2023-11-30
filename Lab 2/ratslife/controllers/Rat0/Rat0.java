@@ -26,6 +26,8 @@ public class Rat0 extends Robot {
   protected final double maxSpeed = 300;
   protected final double[] collisionAvoidanceWeights = {0.06,0.03,0.05,0.02,-0.005,-0.005,-0.03,-0.06};
   protected final double[] slowMotionWeights = {0.0125,0.00625,0.0,0.0,0.02,0.0015,0.00625,0.0125};
+  //protected final double[] collisionAvoidanceWeights = {0.0,0.0,-0.015,0.03,0.06,0.0,-0.003,-0.06};
+  //protected final double[] slowMotionWeights = {0.0125,0.00625,0.0,0.0125,0.00625,0.0,0.0,0.0};
 
   protected Accelerometer accelerometer;
   protected Motor leftMotor, rightMotor;
@@ -68,33 +70,35 @@ public class Rat0 extends Robot {
       // obstacle avoidance behavior
       leftSpeed  = maxSpeed;
       rightSpeed = maxSpeed;
+      for (int i=0;i<8;i++) {
+        leftSpeed  -= (slowMotionWeights[i]+collisionAvoidanceWeights[i])*distance[i];
+        rightSpeed -= (slowMotionWeights[i]-collisionAvoidanceWeights[i])*distance[i];
+      }
 
       // To detect an obstacle use sensors 3,4
-      if(distance[3] > 500 || distance[4] > 500) {
+      if(distance[3] > 400 || distance[4] > 400) {
         leftSpeed = -maxSpeed;  // Turn Left.
         rightSpeed = maxSpeed;
       }
       else { 
-        //The distance from the left hand side wall is okay, i obey to the LWF rule continue straight
-        if(distance[2] > 300) {
+        // Rat0 is close to the right wall!
+        if(distance[2] > 200) {
           leftSpeed = maxSpeed;
           rightSpeed = maxSpeed;
         }
+        // if not close enough reduce right speed.
         else {
           leftSpeed = maxSpeed;
-          rightSpeed = maxSpeed/8;
+          rightSpeed = maxSpeed/10;
         }
         
-        //I had an 180 left turn, let me fix my position parallel to the wall to avoid crashing to it
-        if(distance[2] > 300){
-          //System.out.println("Oh I came too close");
-          leftSpeed = maxSpeed/2.5;
+        // When I am stuck in the corner..
+        if(distance[3] < 200){
+          leftSpeed = maxSpeed/3;
           rightSpeed = maxSpeed;
         }
       }
-      
-      
-     
+           
       //recharging behavior
       if (battery > oldBattery) {
         leftSpeed  = 0.0;

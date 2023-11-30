@@ -63,7 +63,7 @@ public class Rat1 extends Robot {
       // read sensor information
       for(int i=0;i<8;i++) {
       distance[i] = distanceSensors[i].getValue();
-      System.out.println("Distance sensor " + i + ": " + distance[i]);}
+      //System.out.println("Distance sensor " + i + ": " + distance[i]);}
       battery = batterySensorGetValue();
 
       // obstacle avoidance behavior
@@ -84,15 +84,16 @@ public class Rat1 extends Robot {
           leftSpeed = maxSpeed;
           rightSpeed = maxSpeed;
         }
+        // if not close enough reduce left speed.
         else {
-          leftSpeed = maxSpeed;
-          rightSpeed = maxSpeed/8;
+          leftSpeed = maxSpeed/10;
+          rightSpeed = maxSpeed;
         }
         
         // When I am stuck in the corner..
         if(distance[4] > 200){
-          leftSpeed = maxSpeed/3;
-          rightSpeed = maxSpeed;
+          leftSpeed = maxSpeed;
+          rightSpeed = maxSpeed/3;
         }
       }
       
