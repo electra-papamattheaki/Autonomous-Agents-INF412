@@ -24,7 +24,7 @@ public class Rat1 extends Robot {
 
   protected final int timeStep = 32;
   protected final double maxSpeed = 300;
-  protected final double[] collisionAvoidanceWeights = {0.06,0.03,0.015,0.0,0.0,-0.015,-0.03,-0.06};
+  protected final double[] collisionAvoidanceWeights = {-0.06,-0.03,-0.05,0.02,0.005,0.005,0.03,0.06};
   protected final double[] slowMotionWeights = {0.0125,0.00625,0.0,0.0,0.0,0.0,0.00625,0.0125};
 
   protected Accelerometer accelerometer;
@@ -52,10 +52,6 @@ public class Rat1 extends Robot {
 
   public void run() {
 
-    Random r = new Random();
-    boolean turn = false;
-    boolean right = false;
-    boolean seeFeeder = false;
     double battery;
     double oldBattery = -1.0;
     int image[];
@@ -65,7 +61,6 @@ public class Rat1 extends Robot {
     while (step(timeStep) != -1) {
 
       // read sensor information
-      image = camera.getImage();
       for(int i=0;i<8;i++) distance[i] = distanceSensors[i].getValue();
       battery = batterySensorGetValue();
 
@@ -88,20 +83,17 @@ public class Rat1 extends Robot {
           rightSpeed = maxSpeed;
         }
         else {
-          leftSpeed = maxSpeed/8;
-          rightSpeed = maxSpeed;
+          leftSpeed = maxSpeed;
+          rightSpeed = maxSpeed/8;
         }
         
         //I had an 180 left turn, let me fix my position parallel to the wall to avoid crashing to it
-        if(distance[5] > 300){
-          //System.out.println("Oh I came too close");
+        if(distance[4] > 200){
           leftSpeed = maxSpeed/2.5;
           rightSpeed = maxSpeed;
         }
       }
       
-      
-     
       //recharging behavior
       if (battery > oldBattery) {
         leftSpeed  = 0.0;
@@ -110,6 +102,7 @@ public class Rat1 extends Robot {
       oldBattery = battery;
       
       // Added negative(-) to make the robot work backwards.
+      System.out.println("I'M GOING BACKWARDS!!");
       leftMotor.setVelocity(-0.00628 * leftSpeed);
       rightMotor.setVelocity(-0.00628 * rightSpeed);
     }

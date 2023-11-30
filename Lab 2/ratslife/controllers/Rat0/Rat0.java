@@ -61,7 +61,7 @@ public class Rat0 extends Robot {
 
       for(int i=0;i<8;i++){ 
         distance[i] = distanceSensors[i].getValue();
-        System.out.println("Distance sensor " + i + ": " + distance[i]);
+        //System.out.println("Distance sensor " + i + ": " + distance[i]);
       } 
       battery = batterySensorGetValue();
 
