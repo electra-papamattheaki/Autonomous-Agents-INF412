@@ -24,8 +24,8 @@ public class Rat0 extends Robot {
 
   protected final int timeStep = 32;
   protected final double maxSpeed = 300;
-  protected final double[] collisionAvoidanceWeights = {0.06,0.03,0.05,0.02,-0.005,-0.005,-0.03,-0.06};
-  protected final double[] slowMotionWeights = {0.0125,0.00625,0.0,0.0,0.02,0.0015,0.00625,0.0125};
+  protected final double[] collisionAvoidanceWeights = {0.0,0.0,0.05,0.02,-0.005,-0.005,-0.03,-0.06};
+  protected final double[] slowMotionWeights = {0.0125,0.00625,0.0015,0.0,0.02,0.0015,0.00625,0.0125};
 
   protected Accelerometer accelerometer;
   protected Motor leftMotor, rightMotor;
@@ -68,7 +68,7 @@ public class Rat0 extends Robot {
       // obstacle avoidance behavior
       leftSpeed  = maxSpeed;
       rightSpeed = maxSpeed;
-      
+
       for (int i=0;i<8;i++) {
         leftSpeed  -= (slowMotionWeights[i]+collisionAvoidanceWeights[i])*distance[i];
         rightSpeed -= (slowMotionWeights[i]-collisionAvoidanceWeights[i])*distance[i];
